@@ -42,6 +42,42 @@ def tarjan(num_v, graph):  # graph为邻接表，用{v0: [v1, v2, ...]}表示
     return scc_count, scc
 
 
+def gabow(num_v, graph):
+    dfn = [0] * (num_v + 1)
+    dfn_index = 0
+    scc, scc_count = [0] * (num_v + 1), 0
+    stack, stack2 = [], []
+    
+    def dfs(v):
+        nonlocal dfn_index, scc_count
+
+        dfn_index += 1
+        dfn[v] = dfn_index
+        stack.append(v)
+        stack2.append(v)
+
+        for t in graph.get(v, []):
+            if not dfn[t]:
+                dfs(t)
+            elif not scc[t]:
+                while dfn[stack2[-1]] > dfn[t]:
+                    stack2.pop()
+
+        if v == stack2[-1]:
+            stack2.pop()
+            tmp = 0
+            scc_count += 1
+            while tmp != v:
+                tmp = stack.pop()
+                scc[tmp] = scc_count
+
+    for i in range(1, num_v + 1):
+        if not dfn[i]:
+            dfs(i)
+
+    return scc_count, scc
+
+
 def kosaraju(num_v, graph):
     graph_r = {}
     for s in graph:
@@ -87,8 +123,9 @@ if __name__ == '__main__':
         5: [6],
         6: []
     }
-    print(tarjan(6, graph))
-    print(kosaraju(6, graph))
+    # print(tarjan(6, graph))
+    print(gabow(6, graph))
+    # print(kosaraju(6, graph))
 
     graph = {
         1: [2, 5], 
@@ -101,5 +138,6 @@ if __name__ == '__main__':
         8: [5, 9],
         9: []
     }
-    print(tarjan(9, graph))
-    print(kosaraju(9, graph))
+    # print(tarjan(9, graph))
+    print(gabow(9, graph))
+    # print(kosaraju(9, graph))
