@@ -6,7 +6,7 @@
 
 
 # Implement of KMP algorithm
-def match_string(target, pattern):
+def match_string(query, pattern):
     if len(pattern) <= 0:
         return 0
 
@@ -22,12 +22,14 @@ def match_string(target, pattern):
         return prefix
 
     prefix = compute_prefix(pattern)
+    ans = []
     match = -1
-    for i in range(len(target)):
-        while match >= 0 and target[i] != pattern[match + 1]:
+    for i in range(len(query)):
+        while match >= 0 and query[i] != pattern[match + 1]:
             match = prefix[match]
-        if target[i] == pattern[match + 1]:
+        if query[i] == pattern[match + 1]:
             match += 1
         if match == len(pattern) - 1:
-            return i - match
-    return -1
+            ans.append(i - match)
+            match = prefix[match]
+    return ans
