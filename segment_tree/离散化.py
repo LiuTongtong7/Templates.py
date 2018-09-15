@@ -71,19 +71,22 @@ class SegmentTree(object):
         def query_helper(node, left, right):
             if node.left_bound > right or node.right_bound < left:
                 return set()
-            elif left <= node.left_bound and node.right_bound <= right and node.index >= 0:
-                return {node.index}
+            if left <= node.left_bound and node.right_bound <= right:
+                if node.left_bound == node.right_bound:
+                    return {node.index} if node.index >= 0 else set()
+                if node.index >= 0:  # 该区间内只有一种海报
+                    return {node.index}
+
+            self.push_down(node)
+            mid = (node.left_bound + node.right_bound) >> 1
+            if right <= mid:
+                return query_helper(node.left_child, left, right)
+            elif left > mid:
+                return query_helper(node.right_child, left, right)
             else:
-                self.push_down(node)
-                mid = (node.left_bound + node.right_bound) >> 1
-                if right <= mid:
-                    return query_helper(node.left_child, left, right)
-                elif left > mid:
-                    return query_helper(node.right_child, left, right)
-                else:
-                    left_res = query_helper(node.left_child, left, mid)
-                    right_res = query_helper(node.right_child, mid + 1, right)
-                    return left_res | right_res
+                left_res = query_helper(node.left_child, left, mid)
+                right_res = query_helper(node.right_child, mid + 1, right)
+                return left_res | right_res
 
         return query_helper(self.root, left, right)
 
@@ -136,16 +139,17 @@ class SegmentTree(object):
                 leaves.extend(get_leaves(node.right_child))
                 return leaves
 
+        print(self.arr)
         print(get_leaves(self.root))
 
 
 if __name__ == '__main__':
     # poj 2528
-    intervals = [[1, 4], [2, 6], [8, 10], [3, 4], [7, 10]]
+    intervals = [[1, 4], [2, 6], [8, 10], [3, 4], [8, 13]]
     st = SegmentTree([x for i in intervals for x in i])
     for i, (l, r) in enumerate(intervals):
         l = st.get_discretized_index(l)
         r = st.get_discretized_index(r)
         st.update_interval(l, r, i)
     print(st.query(0, len(st.arr) - 1))
-    # st.print_leaves()
+    st.print_leaves()
