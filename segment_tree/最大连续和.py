@@ -40,6 +40,10 @@ class SegmentTree(object):
 
     @staticmethod
     def push_up(parent, left_child, right_child):
+        if left_child is None:
+            left_child = SegmentTreeNode(0, 0)
+        if right_child is None:
+            right_child = SegmentTreeNode(0, 0)
         parent.total_sum = left_child.total_sum + right_child.total_sum
         parent.max_sum = max(max(left_child.max_sum, right_child.max_sum),
                              left_child.suffix_sum + right_child.prefix_sum)
@@ -55,16 +59,10 @@ class SegmentTree(object):
             elif left <= node.left_bound and node.right_bound <= right:
                 return node
             else:
-                mid = (node.left_bound + node.right_bound) >> 1
-                if right <= mid:
-                    return query_helper(node.left_child, left, right)
-                elif left > mid:
-                    return query_helper(node.right_child, left, right)
-                else:
-                    left_res = query_helper(node.left_child, left, mid)
-                    right_res = query_helper(node.right_child, mid + 1, right)
-                    res = SegmentTreeNode(left, right)
-                    return self.push_up(res, left_res, right_res)
+                left_res = query_helper(node.left_child, left, right)
+                right_res = query_helper(node.right_child, left, right)
+                res = SegmentTreeNode(left, right)
+                return self.push_up(res, left_res, right_res)
 
         return query_helper(self.root, left, right).max_sum
 

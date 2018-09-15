@@ -55,10 +55,6 @@ class SegmentTree(object):
             return -1
         return bsearch(val, 0, len(self.arr))
 
-    # @staticmethod
-    # def push_up(parent, left_child, right_child):
-    #     return parent
-
     @staticmethod
     def push_down(parent):
         if parent.index >= 0:
@@ -95,7 +91,7 @@ class SegmentTree(object):
         def update_helper(node, pos, index):
             if node.left_bound > pos or node.right_bound < pos:
                 return
-            if node.left_bound == node.right_bound:
+            elif node.left_bound == node.right_bound:
                 node.index = index
             else:
                 self.push_down(node)
@@ -116,11 +112,8 @@ class SegmentTree(object):
                 node.index = index
             else:
                 self.push_down(node)
-                mid = (node.left_bound + node.right_bound) >> 1
-                if left <= mid:
-                    update_interval_helper(node.left_child, left, right, index)
-                if right > mid:
-                    update_interval_helper(node.right_child, left, right, index)
+                update_interval_helper(node.left_child, left, right, index)
+                update_interval_helper(node.right_child, left, right, index)
 
         update_interval_helper(self.root, left, right, index)
 
@@ -130,7 +123,7 @@ class SegmentTree(object):
         def get_leaves(node):
             if node is None:
                 return []
-            elif node.left_child is None and node.right_child is None:
+            elif node.left_bound == node.right_bound:
                 return [node.index]
             else:
                 self.push_down(node)

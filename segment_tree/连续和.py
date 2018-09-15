@@ -13,6 +13,9 @@ class SegmentTreeNode(object):
         self.sum = 0
         self.add = 0  # 用于区间更新的延迟标记
 
+    def length(self):
+        return self.right_bound - self.left_bound + 1
+
 
 class SegmentTree(object):
 
@@ -37,47 +40,40 @@ class SegmentTree(object):
 
     @staticmethod
     def push_up(parent, left_child, right_child):
-        parent.sum = left_child.sum + right_child.sum
+        parent.sum = left_child.sum if left_child is not None else 0
+        parent.sum += right_child.sum if right_child is not None else 0
         return parent
 
     @staticmethod
     def push_down(parent):
         if parent.add > 0:
+            parent.left_child.sum += parent.add * parent.left_child.length()
+            parent.right_child.sum += parent.add * parent.right_child.length()
             parent.left_child.add += parent.add
             parent.right_child.add += parent.add
-            mid = (parent.left_bound + parent.right_bound) >> 1
-            parent.left_child.sum += parent.add * (mid - parent.left_bound + 1)
-            parent.right_child.sum += parent.add * (parent.right_bound - mid)
             parent.add = 0
 
     def query(self, left, right):
 
         def query_helper(node, left, right):
             if node.left_bound > right or node.right_bound < left:
-                return None
+                return 0
             elif left <= node.left_bound and node.right_bound <= right:
-                return node
+                return node.sum
             else:
                 self.push_down(node)
-                mid = (node.left_bound + node.right_bound) >> 1
-                if right <= mid:
-                    return query_helper(node.left_child, left, right)
-                elif left > mid:
-                    return query_helper(node.right_child, left, right)
-                else:
-                    left_res = query_helper(node.left_child, left, mid)
-                    right_res = query_helper(node.right_child, mid + 1, right)
-                    res = SegmentTreeNode(left, right)
-                    return self.push_up(res, left_res, right_res)
+                left_res = query_helper(node.left_child, left, right)
+                right_res = query_helper(node.right_child, left, right)
+                return left_res + right_res
 
-        return query_helper(self.root, left, right).sum
+        return query_helper(self.root, left, right)
 
     def update(self, pos, add_val):
 
         def update_helper(node, pos, add_val):
             if node.left_bound > pos or node.right_bound < pos:
                 return
-            if node.left_bound == node.right_bound:
+            elif node.left_bound == node.right_bound:
                 node.sum += add_val
             else:
                 self.push_down(node)
@@ -96,15 +92,12 @@ class SegmentTree(object):
             if node.left_bound > right or node.right_bound < left:
                 return
             elif left <= node.left_bound and node.right_bound <= right:
-                node.sum += add_val * (node.right_bound - node.left_bound + 1)
+                node.sum += add_val * node.length()
                 node.add += add_val
             else:
                 self.push_down(node)
-                mid = (node.left_bound + node.right_bound) >> 1
-                if left <= mid:
-                    update_interval_helper(node.left_child, left, right, add_val)
-                if right > mid:
-                    update_interval_helper(node.right_child, left, right, add_val)
+                update_interval_helper(node.left_child, left, right, add_val)
+                update_interval_helper(node.right_child, left, right, add_val)
                 self.push_up(node, node.left_child, node.right_child)
 
         update_interval_helper(self.root, left, right, add_val)
@@ -114,7 +107,7 @@ class SegmentTree(object):
         def get_leaves(node):
             if node is None:
                 return []
-            elif node.left_child is None and node.right_child is None:
+            elif node.left_bound == node.right_bound:
                 return [node.sum]
             else:
                 self.push_down(node)
