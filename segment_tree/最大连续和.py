@@ -8,7 +8,7 @@
 class SegmentTreeNode(object):
 
     def __init__(self, l, r):
-        self.l, self.r = l, r
+        self.left_bound, self.right_bound = l, r
         self.left_child, self.right_child = None, None
         self.total_sum, self.max_sum = 0, 0
         self.prefix_sum, self.suffix_sum = 0, 0
@@ -50,12 +50,12 @@ class SegmentTree(object):
     def query(self, left, right):
 
         def query_helper(node, left, right):
-            if node.l > right or node.r < left:
+            if node.left_bound > right or node.right_bound < left:
                 return None
-            elif left <= node.l and node.r <= right:
+            elif left <= node.left_bound and node.right_bound <= right:
                 return node
             else:
-                mid = (node.l + node.r) >> 1
+                mid = (node.left_bound + node.right_bound) >> 1
                 if right <= mid:
                     return query_helper(node.left_child, left, right)
                 elif left > mid:
@@ -71,11 +71,11 @@ class SegmentTree(object):
     def update(self, pos, val):
 
         def update_helper(node, pos, val):
-            if node.l == node.r:
+            if node.left_bound == node.right_bound:
                 node.total_sum, node.max_sum = val, val
                 node.prefix_sum, node.suffix_sum = val, val
             else:
-                mid = (node.l + node.r) >> 1
+                mid = (node.left_bound + node.right_bound) >> 1
                 if pos <= mid:
                     update_helper(node.left_child, pos, val)
                 else:

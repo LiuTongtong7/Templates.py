@@ -8,7 +8,7 @@
 class SegmentTreeNode(object):
 
     def __init__(self, l, r):
-        self.l, self.r = l, r
+        self.left_bound, self.right_bound = l, r
         self.left_child, self.right_child = None, None
         self.sum = 0
         self.add = 0  # 用于区间更新的延迟标记
@@ -45,21 +45,21 @@ class SegmentTree(object):
         if parent.add > 0:
             parent.left_child.add += parent.add
             parent.right_child.add += parent.add
-            mid = (parent.l + parent.r) >> 1
-            parent.left_child.sum += parent.add * (mid - parent.l + 1)
-            parent.right_child.sum += parent.add * (parent.r - mid)
+            mid = (parent.left_bound + parent.right_bound) >> 1
+            parent.left_child.sum += parent.add * (mid - parent.left_bound + 1)
+            parent.right_child.sum += parent.add * (parent.right_bound - mid)
             parent.add = 0
 
     def query(self, left, right):
 
         def query_helper(node, left, right):
-            if node.l > right or node.r < left:
+            if node.left_bound > right or node.right_bound < left:
                 return None
-            elif left <= node.l and node.r <= right:
+            elif left <= node.left_bound and node.right_bound <= right:
                 return node
             else:
                 self.push_down(node)
-                mid = (node.l + node.r) >> 1
+                mid = (node.left_bound + node.right_bound) >> 1
                 if right <= mid:
                     return query_helper(node.left_child, left, right)
                 elif left > mid:
@@ -75,13 +75,13 @@ class SegmentTree(object):
     def update(self, pos, add_val):
 
         def update_helper(node, pos, add_val):
-            if node.l > pos or node.r < pos:
+            if node.left_bound > pos or node.right_bound < pos:
                 return
-            if node.l == node.r:
+            if node.left_bound == node.right_bound:
                 node.sum += add_val
             else:
                 self.push_down(node)
-                mid = (node.l + node.r) >> 1
+                mid = (node.left_bound + node.right_bound) >> 1
                 if pos <= mid:
                     update_helper(node.left_child, pos, add_val)
                 else:
@@ -93,16 +93,18 @@ class SegmentTree(object):
     def update_interval(self, left, right, add_val):
 
         def update_interval_helper(node, left, right, add_val):
-            if node.l > right or node.r < left:
+            if node.left_bound > right or node.right_bound < left:
                 return
-            elif left <= node.l and node.r <= right:
-                node.sum += add_val * (node.r - node.l + 1)
+            elif left <= node.left_bound and node.right_bound <= right:
+                node.sum += add_val * (node.right_bound - node.left_bound + 1)
                 node.add += add_val
             else:
                 self.push_down(node)
-                mid = (node.l + node.r) >> 1
-                update_interval_helper(node.left_child, left, right, add_val)
-                update_interval_helper(node.right_child, left, right, add_val)
+                mid = (node.left_bound + node.right_bound) >> 1
+                if left <= mid:
+                    update_interval_helper(node.left_child, left, right, add_val)
+                if right > mid:
+                    update_interval_helper(node.right_child, left, right, add_val)
                 self.push_up(node, node.left_child, node.right_child)
 
         update_interval_helper(self.root, left, right, add_val)
