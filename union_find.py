@@ -12,13 +12,18 @@ class UnionFind(object):
         self.id = list(range(n))
         self.size = [1] * n
 
+    # 路径压缩 - 将本节点连到父节点的父节点
     def find(self, p):
         while self.id[p] != p:
-            # self.size[self.id[p]] -= 1
             self.id[p] = self.id[self.id[p]]
-            # self.size[self.id[p]] += 1
             p = self.id[p]
         return p
+
+    # 路径压缩 - 将本节点连到根结点
+    # def find(self, p):
+    #     if self.id[p] != p:
+    #         self.id[p] = self.find(self.id[p])
+    #     return self.id[p]
 
     def union(self, p, q):
         p_root = self.find(p)
