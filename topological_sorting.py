@@ -6,19 +6,21 @@
 
 
 def topological_sort(num_v, graph):  # graph为邻接表，用{v0: [v1, v2, ...]}表示
+    import collections
+
     indegree = [0] * (num_v + 1)
     for s in graph:
         for t in graph[s]:
             indegree[t] += 1
     
-    queue = []  # 维护一个入度为0的队列
+    queue = collections.deque()  # 维护一个入度为0的队列
     for v in range(1, num_v + 1):
         if indegree[v] == 0:
             queue.append(v)
 
     ans = []
     while len(queue) > 0:
-        v = queue.pop(0)
+        v = queue.popleft()
         ans.append(v)
 
         for i in graph.get(v, []):

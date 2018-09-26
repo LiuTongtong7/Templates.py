@@ -46,23 +46,25 @@ def hungarian_dfs(left_v, right_v, graph):
 
 
 def hungarian_bfs(left_v, right_v, graph):
+    import collections
+
     num_v = len(left_v) + len(right_v)
     matching = [0] * (num_v + 1)
     ans = 0
     visited = [False] * (num_v + 1)
     
     prev = [0] * (num_v + 1)
-    queue = []
+    queue = collections.deque()
 
     for i in left_v:
         if matching[i] == 0:
             if len(queue) > 0:
-                del queue[:]
+                queue.clear()
             prev[i] = 0  # i为路径起点
             queue.append(i)
             found = False  # 是否找到增广路径
             while len(queue) > 0 and not found:
-                u = queue.pop(0)
+                u = queue.popleft()
                 for v in graph.get(u, []):
                     if visited[v] != i:
                         visited[v] = i

@@ -79,19 +79,21 @@ def multiple_knapsack_by01(knapsack_size, items):  # items格式: [(num, weight,
 
 
 def _multiple_knapsack(dp, knapsack_size, num, weight, value):
+    import collections
+
     # 背包容量 W=q*weight+r
     for r in range(weight):
-        queue1, queue2 = [], []  # 主队列，辅助队列（单调队列）
+        queue1, queue2 = collections.deque(), collections.deque()  # 主队列，辅助队列（单调队列）
         W, q = r, 0
         while W <= knapsack_size:
             if len(queue1) >= num:
                 if queue1[0] == queue2[0]:
-                    queue2.pop(0)
-                queue1.pop(0)
+                    queue2.popleft()
+                queue1.popleft()
             tmp = dp[W] - q * value
             queue1.append(tmp)
             while len(queue2) > 0 and queue2[-1] < tmp:
-                queue2.pop(-1)
+                queue2.pop()
             queue2.append(tmp)
             dp[W] = queue2[0] + q * value
 
