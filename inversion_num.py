@@ -86,15 +86,19 @@ def inversion_num_by_fenwick(arr):  # arr都要是正数
 
 
 def inversion_num_by_fenwick2(arr):  # 离散化
-    pos_val = sorted(list(enumerate(arr)), key=lambda x: x[1])
-    discretized_arr = [0] * len(arr)
-    idx = 1
-    discretized_arr[pos_val[0][0]] = idx
-    for i in range(1, len(arr)):
-        if pos_val[i][1] > pos_val[i - 1][1]:
-            idx += 1
-        discretized_arr[pos_val[i][0]] = idx
-    return inversion_num_by_fenwick(discretized_arr)
+    
+    def discretize(arr):
+        pos_val = sorted(list(enumerate(arr)), key=lambda x: x[1])
+        discretized_arr = [0] * len(arr)
+        idx = 1
+        discretized_arr[pos_val[0][0]] = idx
+        for i in range(1, len(arr)):
+            if pos_val[i][1] > pos_val[i - 1][1]:
+                idx += 1
+            discretized_arr[pos_val[i][0]] = idx
+        return discretized_arr
+
+    return inversion_num_by_fenwick(discretize(arr))
 
 
 if __name__ == '__main__':
