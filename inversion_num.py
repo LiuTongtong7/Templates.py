@@ -76,8 +76,7 @@ class FenwickTree(object):
 
 
 def inversion_num_by_fenwick(arr):  # arr都要是正数
-    maxv = max(arr)
-    ft = FenwickTree(maxv)
+    ft = FenwickTree(max(arr))
     ans = 0
     for i, val in enumerate(arr):
         ft.update(val, 1)
