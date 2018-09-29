@@ -69,31 +69,33 @@ def merge_sort(arr):
                     r += 1
         a, b = b, a
         width *= 2
+    if a is not arr:
+        arr[:] = a[:]
     return arr
 
 
 def merge_sort2(arr):
-    if len(arr) <= 1:
-        return arr
 
-    def merge(left, right):
-        l, r = 0, 0
-        result = list()
-        while l < len(left) and r < len(right):
-            if left[l] <= right[r]:
-                result.append(left[l])
+    def helper(arr, buf, left, right):
+        if left >= right:
+            return
+        middle = (left + right) >> 1
+        helper(arr, buf, left, middle)
+        helper(arr, buf, middle + 1, right)
+        l, r = left, middle + 1
+        for i in range(left, right + 1):
+            if l <= middle and (r > right or arr[l] <= arr[r]):
+                buf[i] = arr[l]
                 l += 1
             else:
-                result.append(right[r])
+                buf[i] = arr[r]
                 r += 1
-        result += left[l:]
-        result += right[r:]
-        return result
+        arr[left: right + 1] = buf[left: right + 1]
 
-    middle = len(arr) // 2
-    left = merge_sort(arr[:middle])
-    right = merge_sort(arr[middle:])
-    return merge(left, right)
+    n = len(arr)
+    buf = [0] * n
+    helper(arr, buf, 0, n - 1)
+    return arr
 
 
 def quick_sort(arr):
