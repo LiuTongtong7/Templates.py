@@ -8,7 +8,7 @@
 import math
 
 
-class Combinatorial_number(object):
+class CombinatorialNumber(object):
 
     def __init__(self, maxn=int(1e6)):
         self.primes = self.get_prime_numbers(maxn)
@@ -56,7 +56,7 @@ class Combinatorial_number(object):
 
 
 if __name__ == '__main__':
-    obj = Combinatorial_number()
+    obj = CombinatorialNumber()
     
     import timeit
     print(timeit.timeit('obj.cal_comb(100000, 50000)', number=1, globals=globals()))
