@@ -41,19 +41,16 @@ class SegmentTree(object):
         self.root = build(self.arr, 0, len(self.arr) - 1)
 
     def get_discretized_index(self, val):
-
-        def bsearch(val, l, r):
-            while l < r:
-                mid = (l + r) >> 1
-                if self.arr[mid] < val:
-                    l = mid + 1
-                else:
-                    r = mid
-            return l
-
         if val < self.arr[0] or val > self.arr[-1]:
             return -1
-        return bsearch(val, 0, len(self.arr))
+        l, r = 0, len(self.arr)
+        while l < r:
+            mid = (l + r) >> 1
+            if self.arr[mid] < val:
+                l = mid + 1
+            else:
+                r = mid
+        return l
 
     @staticmethod
     def push_down(parent):
